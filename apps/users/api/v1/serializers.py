@@ -13,18 +13,25 @@ class UserSerializer(serializers.ModelSerializer):
         model = User
         fields = ('first_name', 'last_name', 'mobile', 'email', 'password')
 
+    def validate_mobile(self, value):
+        if value:
+            user = User.objects.filter(mobile=value, is_registered=True).first()
+            if user:
+                raise serializers.ValidationError('This number already exists.')
+
+        return value
+
     def create(self, validated_data):
+        already_exist = False
         try:
             user = super(UserSerializer, self).create(validated_data)
         except IntegrityError:
             user = User.objects.get(mobile=validated_data['mobile'])
-            if not user.is_registered:
-                pass
-            else:
-                raise serializers.ValidationError({'mobile': 'this number already exist'})
+            already_exist = True
+        if already_exist:
+            for key, val in validated_data.items():
+                setattr(user, key, val)
         user.is_registered = True
-        for key, val in validated_data.items():
-            setattr(user, key, val)
         user.set_password(validated_data['password'])
         user.save()
         return user

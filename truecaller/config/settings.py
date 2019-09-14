@@ -10,13 +10,17 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/1.11/ref/settings/
 """
 
-import os
+import os, sys
 from datetime import timedelta
+APP_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+PROJ_DIR = os.path.dirname(
+    os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-
+sys.path.append(PROJ_DIR)
+sys.path.append(os.path.join(PROJ_DIR, 'apps'))
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.11/howto/deployment/checklist/
 
@@ -63,7 +67,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-ROOT_URLCONF = 'truecaller.urls'
+ROOT_URLCONF = 'truecaller.config.urls'
 
 TEMPLATES = [
     {
@@ -81,7 +85,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'truecaller.wsgi.application'
+WSGI_APPLICATION = 'truecaller.config.wsgi.application'
 
 
 # Database
@@ -144,6 +148,7 @@ REST_FRAMEWORK = {
 
 STATIC_URL = '/static/'
 
+# JWT settings
 SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(minutes=200),
     'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
